@@ -1,16 +1,14 @@
 const std = @import("std");
 const pb = @import("protobuf");
-const foo = @import("foo");
-
+const foo = @import("proto/foo.pb.zig");
 
 pub fn main() !void {
+    const gpa = std.heap.page_allocator;
 
-    const res = pb.pb_encode(foo.SearchRequest{}, std.mem.Allocator);
+    const res = pb.pb_encode(foo.SearchRequest{.page_number = 123}, gpa);
 
-    std.debug.print("{}", .{res });
+    std.debug.print("{any}\n", .{res});
 
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
 
     // stdout is for the actual output of your application, for example if you
     // are implementing gzip, then only the compressed bytes should be sent to
@@ -19,7 +17,7 @@ pub fn main() !void {
     var bw = std.io.bufferedWriter(stdout_file);
     const stdout = bw.writer();
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+    try stdout.print("Done.\n", .{});
 
     try bw.flush(); // don't forget to flush!
 }
